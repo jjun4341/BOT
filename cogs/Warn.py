@@ -81,6 +81,27 @@ class Warn(commands.Cog):
             await user.add_roles(roles)
             await user.send('뮤트가 해제되었습니다.')
 
+    @commands.command(name='제재내역')
+    async def _my_warns(self, ctx):
+        if self.coll.find_one({"_id": str(ctx.author.id)}):
+            embed = discord.Embed(
+                title=f'`{str(ctx.author)}`님의 경고',
+                description=str(self.coll.find_one({"_id": str(ctx.author.id)})['warn_count']) + "개",
+                color=0x00FFFF
+            )
+            await ctx.send(embed=embed)
+        else:
+            self.coll.insert_one({
+                "_id": str(ctx.author.id),
+                "warn_count": 0
+            })
+            embed = discord.Embed(
+                title=f'`{str(ctx.author)}`님의 경고',
+                description='0개',
+                color=0x00FFFF
+            )
+            await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Warn(bot))
